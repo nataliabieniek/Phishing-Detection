@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+    command: python src/generate_emails.py --urls data/phishing_site_urls.csv --n 200 --out data/emails.json
+  jupyter:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8888:8888"
+    command: jupyter lab --ip=0.0.0.0 --no-browser --allow-root --IdentityProvider.token=''

@@ -1,0 +1,43 @@
+{
+  "phishing": [
+    {
+      "id": "ph_account_suspended",
+      "subject": "Action required: your {brand} account has been suspended",
+      "body": "Dear customer,\n\nWe detected unusual activity on your {brand} account and it has been temporarily suspended. To restore access, please verify your identity within 24 hours:\n\n{url}\n\nFailure to do so will result in permanent closure.\n\n{brand} Security Team"
+    },
+    {
+      "id": "ph_payment_failed",
+      "subject": "Your payment could not be processed",
+      "body": "Hello,\n\nYour last payment to {brand} was declined. Please update your billing details immediately to avoid service interruption:\n\n{url}\n\nThank you,\n{brand} Billing Department"
+    },
+    {
+      "id": "ph_password_expiry",
+      "subject": "Your password expires today",
+      "body": "Hi,\n\nYour {brand} password will expire in a few hours. Click below to keep your current password:\n\n{url}\n\nIT Support"
+    },
+    {
+      "id": "ph_prize",
+      "subject": "Congratulations! You have been selected",
+      "body": "Dear user,\n\nYou are our lucky winner of a {brand} reward. Claim your prize before it expires:\n\n{url}\n\nBest regards,\n{brand} Rewards"
+    }
+  ],
+  "legitimate": [
+    {
+      "id": "ok_meeting",
+      "subject": "Meeting notes from Tuesday",
+      "body": "Hi team,\n\nAttached are the notes from Tuesday's meeting. The project plan is available here:\n\n{url}\n\nBest,\n{sender}"
+    },
+    {
+      "id": "ok_newsletter",
+      "subject": "Your monthly newsletter",
+      "body": "Hello,\n\nThis month's newsletter is ready. You can read it online at:\n\n{url}\n\nYou can unsubscribe at any time in your account settings.\n\n{brand} Team"
+    },
+    {
+      "id": "ok_shipping",
+      "subject": "Your order has shipped",
+      "body": "Hi,\n\nYour order has shipped and is on its way. Track the delivery here:\n\n{url}\n\nThank you for shopping with {brand}."
+    }
+  ],
+  "brands": ["Example Bank", "ExamplePay", "ExampleMail", "ExampleCloud", "ExampleShop"],
+  "senders": ["Anna", "John", "Maria", "Peter"]
+}
