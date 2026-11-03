@@ -19,31 +19,29 @@ features_milena.py.
 def body_length(email: dict) -> int:
     """Liczba znakow w tresci maila."""
     body = email.get("body", "")
-    # TODO: value = len(body)
-    value = 0
+    value = len(body)
     return int(value)  # format zwrotu: int >= 0
 
 
 def word_count(email: dict) -> int:
     """Liczba slow (rozdzielonych bialymi znakami) w tresci."""
     body = email.get("body", "")
-    # TODO: value = len(body.split())
-    value = 0
+    value = len(body.split())
     return int(value)  # format zwrotu: int >= 0
 
 
 def avg_word_length(email: dict) -> float:
     """Srednia dlugosc slowa w tresci (0.0 gdy brak slow)."""
     body = email.get("body", "")
-    # TODO: suma dlugosci slow / liczba slow
-    value = 0.0
+    words = body.split()
+    value = sum(len(w) for w in words) / len(words) if words else 0.0
     return round(float(value), 4)  # format zwrotu: float >= 0, 4 miejsca po przecinku
 
 
 def total_length(email: dict) -> int:
     """Dlugosc calego maila: nadawca + odbiorca + data + temat + tresc."""
-    # TODO: suma len(str(email.get(k, ""))) dla k w sender, receiver, date, subject, body
-    value = 0
+    keys = ("sender", "receiver", "date", "subject", "body")
+    value = sum(len(str(email.get(k, ""))) for k in keys)
     return int(value)  # format zwrotu: int >= 0
 
 
@@ -53,32 +51,29 @@ def total_length(email: dict) -> int:
 def dot_count(email: dict) -> int:
     """Liczba znakow '.' w tresci."""
     body = email.get("body", "")
-    # TODO: value = body.count(".")
-    value = 0
+    value = body.count(".")
     return int(value)  # format zwrotu: int >= 0
 
 
 def exclamation_count(email: dict) -> int:
     """Liczba znakow '!' w tresci."""
     body = email.get("body", "")
-    # TODO: value = body.count("!")
-    value = 0
+    value = body.count("!")
     return int(value)  # format zwrotu: int >= 0
 
 
 def uppercase_ratio(email: dict) -> float:
     """Ulamek liter w tresci, ktore sa wielkie (0.0 gdy brak liter)."""
     body = email.get("body", "")
-    # TODO: wielkie litery / wszystkie litery
-    value = 0.0
+    letters = [c for c in body if c.isalpha()]
+    value = sum(c.isupper() for c in letters) / len(letters) if letters else 0.0
     return round(float(value), 4)  # format zwrotu: float z zakresu 0-1, 4 miejsca po przecinku
 
 
 def digit_count(email: dict) -> int:
     """Liczba cyfr w tresci."""
     body = email.get("body", "")
-    # TODO: value = sum(c.isdigit() for c in body)
-    value = 0
+    value = sum(c.isdigit() for c in body)
     return int(value)  # format zwrotu: int >= 0
 
 # Cechy zwracane w tabeli (kolumna = klucz).

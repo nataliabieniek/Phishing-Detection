@@ -16,14 +16,23 @@ def _text(email: dict) -> str:
     return f"{email.get('subject', '')} {email.get('body', '')}".lower()
 
 
+def _match(text: str, patterns: list) -> int:
+    """1 jesli ktorykolwiek wzorzec regex pasuje do `text`, inaczej 0."""
+    return int(any(re.search(p, text) for p in patterns))
+
+
 def curiosity_trigger(email: dict) -> int:
     """Curiosity Trigger. Przyklad: "You need to see this confidential document."
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"confidential",
+        r"see this",
+        r"you won'?t believe",
+        r"secret",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -33,8 +42,14 @@ def greed_appeal(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"earn (easy )?money",
+        r"no effort",
+        r"make money",
+        r"get rich",
+        r"easy money",
+        r"\$\d[\d,]*\s*(a|per) (day|week)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -44,8 +59,12 @@ def reward_promise(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"claim your (reward|gift|bonus)",
+        r"reward",
+        r"free gift",
+        r"bonus",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -55,8 +74,13 @@ def lottery_winner_claim(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"you (have )?won",
+        r"lottery",
+        r"winner",
+        r"jackpot",
+        r"sweepstake",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -66,8 +90,13 @@ def inheritance_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"inheritance",
+        r"deceased",
+        r"next of kin",
+        r"late (father|husband|client)",
+        r"beneficiary",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -77,8 +106,12 @@ def tax_refund_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"tax refund",
+        r"refund.{0,20}tax",
+        r"irs",
+        r"hmrc",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -88,8 +121,13 @@ def investment_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"guaranteed (profit|return)",
+        r"no risk",
+        r"risk[- ]free",
+        r"investment opportunity",
+        r"high returns?",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -99,8 +137,13 @@ def cryptocurrency_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"crypto",
+        r"bitcoin",
+        r"\bbtc\b",
+        r"ethereum",
+        r"double your",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -110,8 +153,12 @@ def charity_donation_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"donat",
+        r"charity",
+        r"help (vulnerable|children|the poor)",
+        r"fundrais",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -121,8 +168,12 @@ def fake_charity_campaign(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"donate to (support|help)",
+        r"relief fund",
+        r"disaster victims",
+        r"charity campaign",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -132,8 +183,14 @@ def disaster_victim_impersonation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"lost everything",
+        r"flood",
+        r"earthquake",
+        r"hurricane",
+        r"tsunami",
+        r"fire destroyed",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -143,8 +200,13 @@ def war_victim_impersonation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"refugee",
+        r"\bwar\b",
+        r"civil war",
+        r"fled (the|my) country",
+        r"displaced",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -154,8 +216,13 @@ def cancer_patient_impersonation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"cancer",
+        r"chemotherapy",
+        r"tumou?r",
+        r"financial help for treatment",
+        r"terminal(ly)? ill",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -165,8 +232,13 @@ def disabled_person_impersonation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"disabled",
+        r"disability",
+        r"wheelchair",
+        r"medical recovery",
+        r"handicap",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -176,8 +248,12 @@ def orphan_impersonation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"orphan",
+        r"losing my parents",
+        r"lost my parents",
+        r"parents (died|passed)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -187,8 +263,13 @@ def elderly_person_impersonation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"life savings",
+        r"elderly",
+        r"\bpensioner\b",
+        r"i am \d{2} years old",
+        r"old widow",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -198,8 +279,12 @@ def single_parent_impersonation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"single (mother|father|parent)",
+        r"provide for my children",
+        r"my (kids|children) (need|are)",
+        r"widow",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -209,8 +294,12 @@ def animal_rescue_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"abandoned animals",
+        r"animal (rescue|shelter)",
+        r"save (the )?(dogs|cats|animals)",
+        r"stray",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -220,8 +309,13 @@ def authority_abuse(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"management (requires|requests)",
+        r"immediate action",
+        r"by order of",
+        r"director requires",
+        r"executive team",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -231,8 +325,12 @@ def ceo_fraud(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bceo\b",
+        r"chief executive",
+        r"the president requests",
+        r"managing director",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -242,8 +340,12 @@ def fake_hr_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bhr\b",
+        r"human resources",
+        r"employee verification",
+        r"payroll department",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -253,8 +355,12 @@ def fake_it_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bit (department|support|helpdesk|team|requests?)",
+        r"help ?desk",
+        r"system administrator",
+        r"password reset",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -264,8 +370,13 @@ def fake_legal_department(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"legal department",
+        r"compliance (review|team|department)",
+        r"legal team",
+        r"attorney",
+        r"law firm",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -275,8 +386,15 @@ def fake_government_agency(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"tax authorit",
+        r"government",
+        r"\birs\b",
+        r"customs office",
+        r"ministry",
+        r"police department",
+        r"\bfbi\b",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -286,8 +404,13 @@ def fake_university_message(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"student account",
+        r"university",
+        r"\bcampus\b",
+        r"student portal",
+        r"registrar",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -297,8 +420,13 @@ def fake_bank_alert(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"suspicious (banking )?activity",
+        r"your bank",
+        r"bank account (is|has been)",
+        r"unauthori[sz]ed (transaction|transfer)",
+        r"banking",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -308,8 +436,15 @@ def fake_courier_message(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bdhl\b",
+        r"\bups\b",
+        r"fedex",
+        r"\busps\b",
+        r"courier",
+        r"your package",
+        r"parcel",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -319,8 +454,9 @@ def fake_paypal_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"paypal",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -330,8 +466,9 @@ def fake_amazon_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"amazon",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -341,8 +478,9 @@ def fake_google_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"google",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -352,8 +490,11 @@ def fake_microsoft_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"microsoft",
+        r"office ?365",
+        r"outlook",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -363,8 +504,12 @@ def fake_apple_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"apple id",
+        r"\bapple\b",
+        r"icloud",
+        r"itunes",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -374,8 +519,9 @@ def fake_facebook_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"facebook",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -385,8 +531,9 @@ def fake_instagram_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"instagram",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -396,8 +543,9 @@ def fake_linkedin_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"linkedin",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -407,8 +555,13 @@ def confidentiality_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"do not (discuss|share|tell)",
+        r"don'?t (discuss|share|tell)",
+        r"strictly confidential",
+        r"keep (this|it) (private|secret|confidential)",
+        r"confidentiality",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -418,8 +571,13 @@ def isolation_attempt(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"only you",
+        r"don'?t tell anyone",
+        r"do not tell anyone",
+        r"keep (this )?between us",
+        r"without (informing|telling)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -429,8 +587,11 @@ def secret_payment_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"keep this (transaction|payment) (confidential|secret)",
+        r"confidential (transaction|payment|transfer)",
+        r"discreet(ly)?",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -440,8 +601,12 @@ def gift_card_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"gift ?cards?",
+        r"itunes card",
+        r"google play card",
+        r"steam card",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -451,8 +616,12 @@ def urgent_payment_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(transfer|wire|send|pay).{0,30}(immediately|urgent|asap|today)",
+        r"urgent (payment|transfer)",
+        r"wire transfer",
+        r"overdue",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -462,8 +631,13 @@ def supplier_change_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"new bank account",
+        r"changed (our )?bank",
+        r"updated bank (details|account)",
+        r"new account (number|details)",
+        r"supplier",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -473,8 +647,12 @@ def invoice_redirection_fraud(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"future payments",
+        r"redirect.{0,20}payment",
+        r"invoice.{0,30}(new|updated) (account|bank)",
+        r"payments should be sent",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -484,8 +662,12 @@ def vendor_impersonation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"changed our payment",
+        r"payment details",
+        r"vendor",
+        r"remittance",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -495,8 +677,13 @@ def business_email_compromise(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"process this transfer",
+        r"wire (the )?funds",
+        r"are you available",
+        r"i need you to (handle|process)",
+        r"urgent task",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -506,8 +693,12 @@ def fake_voicemail_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"voicemail",
+        r"voice ?mail",
+        r"missed call",
+        r"voice message",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -517,8 +708,12 @@ def fake_shared_document(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"shared with you",
+        r"has shared",
+        r"document.{0,20}shared",
+        r"view (the )?document",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -528,8 +723,10 @@ def fake_onedrive_file(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"onedrive",
+        r"sharepoint",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -539,8 +736,11 @@ def fake_google_drive_file(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"google drive",
+        r"google docs",
+        r"drive\.google",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -550,8 +750,9 @@ def fake_dropbox_file(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"dropbox",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -561,8 +762,10 @@ def fake_teams_message(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"microsoft teams",
+        r"\bteams message",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -572,8 +775,9 @@ def fake_slack_notification(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"slack",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -583,8 +787,9 @@ def fake_zoom_meeting(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"zoom",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -594,8 +799,12 @@ def fake_meeting_invitation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"meeting invit",
+        r"accept the (meeting|invitation)",
+        r"you are invited",
+        r"join (the )?meeting",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -605,8 +814,12 @@ def calendar_update_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"calendar",
+        r"scheduled event",
+        r"reschedul",
+        r"event (update|change)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -616,8 +829,12 @@ def service_upgrade_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"premium",
+        r"activate.{0,20}features",
+        r"upgrade (your )?(plan|account|service)",
+        r"upgrade now",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -627,8 +844,10 @@ def subscription_renewal_notice(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"renew",
+        r"subscription",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -638,8 +857,11 @@ def expired_subscription_alert(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(subscription|membership|license|account).{0,20}(has )?expired",
+        r"expired (subscription|membership)",
+        r"has expired",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -649,8 +871,12 @@ def cloud_storage_alert(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"storage (is )?(full|limit|quota)",
+        r"cloud storage",
+        r"mailbox (is )?(full|quota)",
+        r"out of storage",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -660,8 +886,12 @@ def security_patch_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"security (patch|update)",
+        r"critical (update|patch)",
+        r"install.{0,20}update",
+        r"hotfix",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -671,8 +901,11 @@ def system_upgrade_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"upgrade.{0,30}(operating system|system|windows|software)",
+        r"system upgrade",
+        r"os update",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -682,8 +915,11 @@ def firmware_update_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"firmware",
+        r"bios update",
+        r"driver update",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -693,8 +929,12 @@ def mobile_security_alert(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"smartphone",
+        r"mobile (security|device|phone)",
+        r"your (phone|iphone|android)",
+        r"sim card",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -704,8 +944,12 @@ def device_registration_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"register your device",
+        r"device registration",
+        r"enroll.{0,20}device",
+        r"register.{0,20}(phone|computer)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -715,8 +959,12 @@ def unknown_device_warning(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"unknown device",
+        r"new device",
+        r"unrecogni[sz]ed (device|login)",
+        r"unusual (login|sign[- ]in)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -726,8 +974,12 @@ def account_recovery_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"recover(y)? (access|your account)",
+        r"account recovery",
+        r"restore (your )?account",
+        r"regain access",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -737,8 +989,12 @@ def verification_form_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"verification form",
+        r"fill (out|in).{0,20}form",
+        r"complete (the|this) form",
+        r"attached form",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -748,8 +1004,12 @@ def customer_survey_scam(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"survey",
+        r"questionnaire",
+        r"feedback.{0,20}(reward|gift)",
+        r"customer satisfaction",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -759,8 +1019,10 @@ def fake_cashback_offer(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"cash ?back",
+        r"money back offer",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
