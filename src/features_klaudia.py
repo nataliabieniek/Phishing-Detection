@@ -123,8 +123,14 @@ def urgency(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\burgent(ly)?\b",
+        r"\bimmediate(ly)?\b",
+        r"as soon as possible|\basap\b",
+        r"right away|without delay",
+        r"act now|respond (now|promptly)",
+        r"within \d+ (hours?|days?)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -134,8 +140,15 @@ def time_pressure(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"expires? (today|tonight|soon|in \d+)",
+        r"(offer|deal|promotion) (ends|expires)",
+        r"limited[- ]time",
+        r"last chance",
+        r"\bdeadline\b",
+        r"only \d+ (hours?|days?) (left|remaining)",
+        r"today only|before it'?s too late",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -145,8 +158,11 @@ def threat_of_account_suspension(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"account (will|may|could|has) (be |been )?(suspended|disabled|locked|closed|deactivated|terminated|blocked|frozen|restricted)",
+        r"(suspend|lock|close|deactivate|disable|block|freeze|restrict) your account",
+        r"account (suspension|deactivation|termination)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -156,8 +172,11 @@ def threat_of_data_loss(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(files|data|emails|messages|photos|documents|contacts) (will|may|could) (be )?(permanently )?(deleted|lost|removed|erased|destroyed)",
+        r"permanently (deleted|lost|removed|erased)",
+        r"lose (all )?(of )?your (data|files|emails|messages|photos|documents)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -167,8 +186,11 @@ def threat_of_service_interruption(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(subscription|service|membership|mailbox|e-?mail account|access|plan) (will|may|could|has) (be |been )?(terminated|cancell?ed|interrupted|discontinued|suspended|stopped|expired)",
+        r"service interruption",
+        r"(lose|losing) access",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -178,8 +200,11 @@ def security_alert_with_checking_pressure(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(suspicious|unusual|unauthori[sz]ed|irregular) (activity|log ?in|sign[- ]?in|access|transaction|attempt)",
+        r"security (alert|warning|notice|breach)",
+        r"(someone|somebody) (tried|attempted) to (access|log|sign)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -189,8 +214,10 @@ def immediately_account_recovery_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(restore|recover|reactivate|unlock|regain) (full )?(access to )?your account",
+        r"account recovery",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -200,8 +227,12 @@ def password_reset_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"reset (your )?password",
+        r"password reset",
+        r"(change|update|renew) your password",
+        r"password (has )?expire",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -211,8 +242,10 @@ def credential_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(enter|provide|confirm|verify|update|send|submit) (us )?(your )?(username|user name|login (details|credentials)|password|credentials|user ?id)",
+        r"username and password",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -222,8 +255,10 @@ def login_verification_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(log ?in|sign ?in) (to|and) (confirm|verify|validate)",
+        r"(confirm|verify|validate) your (identity|log ?in|account)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -233,8 +268,11 @@ def repeated_login_prompt(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"session (has )?(expired|timed out)",
+        r"(log|sign) ?in again",
+        r"re-?(log|sign) ?in|re-?enter your (password|credentials)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -244,8 +282,13 @@ def microsoft_login_redirect(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(microsoft|office) ?365",
+        r"microsoft account",
+        r"sign ?in (to|with) (your )?(microsoft|outlook|office|onedrive)",
+        r"\b(onedrive|sharepoint)\b",
+        r"outlook (web|account|login)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -255,8 +298,11 @@ def google_login_redirect(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"google account",
+        r"sign ?in (to|with) (your )?(google|gmail)",
+        r"gmail account|google drive|accounts\.google",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -266,8 +312,11 @@ def bank_login_redirect(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(online|internet|mobile|e-?) ?banking",
+        r"(log ?in|sign ?in) (to|into) your (bank|banking)",
+        r"bank account (login|access)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -277,8 +326,11 @@ def fake_login_page(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"secure (log ?in|sign[- ]?in|verification|account) (page|portal|link|form|server)",
+        r"(log ?in|sign[- ]?in|verification) (page|portal|form)",
+        r"click (here|the link|below|the button) to (log ?in|sign ?in|verify|confirm)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
