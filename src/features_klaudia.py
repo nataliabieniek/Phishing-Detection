@@ -16,6 +16,107 @@ def _text(email: dict) -> str:
     return f"{email.get('subject', '')} {email.get('body', '')}".lower()
 
 
+def _raw(email: dict) -> str:
+    """Temat + tresc maila bez zmiany wielkosci liter."""
+    return f"{email.get('subject', '')} {email.get('body', '')}"
+
+
+def _match(text: str, patterns: list) -> int:
+    """1 jesli ktorykolwiek wzorzec regex pasuje do `text`, inaczej 0."""
+    return int(any(re.search(p, text) for p in patterns))
+
+
+# URL ze schematem, z www. albo goly adres z popularna/podejrzana koncowka.
+URL_RE = re.compile(
+    r"(?:https?://|www\.)[^\s<>\"')\]]+"
+    r"|\b(?:[a-z0-9-]+\.)+(?:com|net|org|info|biz|ru|cn|pl|de|uk|it|xyz|top|club|online|site|tk|ml|ga|cf|gq|cc|ws|pw|io|co|us|br|in|ly|gl|gd|me|at)"
+    r"\b(?:/[^\s<>\"')\]]*)?",
+    re.IGNORECASE,
+)
+IP_RE = re.compile(r"^\d{1,3}(?:\.\d{1,3}){3}$")
+
+BRANDS = [
+    "paypal", "microsoft", "google", "amazon", "apple", "facebook", "netflix",
+    "outlook", "office", "linkedin", "instagram", "ebay", "yahoo", "dropbox",
+    "wellsfargo", "chase", "citibank", "hsbc", "barclays", "santander", "allegro",
+]
+# Podmiany wizualne: rn->m, vv->w, cyfry zamiast liter.
+HOMOGLYPHS = [("rn", "m"), ("vv", "w"), ("0", "o"), ("1", "l"), ("3", "e"), ("5", "s"), ("@", "a")]
+
+UNUSUAL_TLDS = {
+    "xyz", "top", "club", "online", "site", "info", "biz", "tk", "ml", "ga", "cf", "gq",
+    "work", "click", "link", "loan", "win", "review", "country", "kim", "men", "date",
+    "stream", "download", "racing", "bid", "trade", "party", "science", "zip", "mov",
+    "buzz", "rest", "fit", "ws", "cc", "pw", "su", "ru", "cn",
+}
+SHORTENERS = {
+    "bit.ly", "bitly.com", "tinyurl.com", "goo.gl", "t.co", "ow.ly", "is.gd", "buff.ly",
+    "adf.ly", "tiny.cc", "rebrand.ly", "cutt.ly", "shorturl.at", "rb.gy", "t.ly", "s.id",
+    "x.co", "lnkd.in", "db.tt", "qr.net", "tr.im", "v.gd", "bc.vc", "po.st",
+}
+# W zwyklym tekscie pomijamy marki bedace slowami ("apple"/"apply", "chase"/"phase").
+TEXT_BRANDS = [b for b in BRANDS if b not in ("apple", "chase", "office", "ebay", "yahoo", "hsbc")]
+GENERIC_ROLES = (
+    r"(valued |dear |esteemed )?(customer|client|member|account ?holder|subscriber"
+    r"|sir|madam|sir/madam|sir or madam|friend|beneficiary|partner)"
+)
+
+
+def _urls(email: dict) -> list:
+    return URL_RE.findall(_raw(email))
+
+
+def _host(url: str) -> str:
+    host = re.sub(r"^[a-z]+://", "", url.lower())
+    host = re.split(r"[/?#]", host, maxsplit=1)[0]
+    host = host.rsplit("@", 1)[-1].split(":")[0]
+    return host.strip(".")
+
+
+def _hosts(email: dict) -> list:
+    return [h for h in (_host(u) for u in _urls(email)) if "." in h]
+
+
+def _sld(host: str) -> str:
+    """Domena drugiego poziomu, np. 'paypal' dla 'login.paypal.com'."""
+    parts = host.split(".")
+    if len(parts) >= 3 and parts[-2] in ("co", "com", "org", "net", "gov", "ac"):
+        return parts[-3]
+    return parts[-2] if len(parts) >= 2 else host
+
+
+def _one_edit(a: str, b: str) -> bool:
+    """True jesli a i b roznia sie dokladnie jedna edycja (zamiana/wstawienie/usuniecie/przestawienie)."""
+    if a == b or abs(len(a) - len(b)) > 1:
+        return False
+    if len(a) == len(b):
+        diff = [i for i in range(len(a)) if a[i] != b[i]]
+        if len(diff) == 1:
+            return True
+        return len(diff) == 2 and diff[1] == diff[0] + 1 and a[diff[0]] == b[diff[1]] and a[diff[1]] == b[diff[0]]
+    short, long_ = (a, b) if len(a) < len(b) else (b, a)
+    return any(long_[:i] + long_[i + 1:] == short for i in range(len(long_)))
+
+
+def _deglyph(token: str) -> str:
+    for src, dst in HOMOGLYPHS:
+        token = token.replace(src, dst)
+    return token
+
+
+def _near_brand(token: str, brands: list = BRANDS) -> bool:
+    """Token podszywa sie pod marke (literowka lub homoglif), ale nia nie jest."""
+    if len(token) < 4 or token in brands:
+        return False
+    plain = _deglyph(token)
+    for b in brands:
+        if token.startswith(b) or token.endswith(b):
+            continue  # "offices", "paypalsupport" to nie literowki
+        if plain == b or _one_edit(token, b):
+            return True
+    return False
+
+
 def urgency(email: dict) -> int:
     """Urgency. Przyklad: "You must verify your account within 24 hours or access will be suspended."
 
