@@ -511,8 +511,8 @@ def misspelled_brand_name(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    tokens = set(re.findall(r"[a-z0-9@]+", text))
+    value = any(_near_brand(t, TEXT_BRANDS) for t in tokens)
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -521,9 +521,8 @@ def misspelled_domain(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    labels = {p for h in _hosts(email) for p in re.split(r"[.-]", h)}
+    value = any(_near_brand(p) for p in labels)
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -532,9 +531,7 @@ def typosquatting_domain(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = any(_near_brand(_deglyph(p)) or _near_brand(p) for h in _hosts(email) for p in _sld(h).split("-"))
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -543,9 +540,9 @@ def lookalike_domain(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    # Prawdziwa nazwa marki w hoscie, ale zarejestrowana domena jest inna,
+    # np. secure-amazon-support.com albo paypal.com.evil.ru.
+    value = any(b in h and _sld(h) != b for h in _hosts(email) for b in BRANDS)
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -554,9 +551,7 @@ def unusual_tld(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = any(h.rsplit(".", 1)[-1] in UNUSUAL_TLDS for h in _hosts(email))
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -565,9 +560,7 @@ def long_url(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = any(len(u) > 75 for u in _urls(email))  # prog 75 znakow wg literatury URL-phishing
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -576,9 +569,7 @@ def ip_address_url(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = any(IP_RE.match(_host(u)) for u in _urls(email))
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -587,9 +578,7 @@ def encoded_url(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = any(re.search(r"%[0-9a-f]{2}|xn--", u, re.IGNORECASE) for u in _urls(email))
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -598,9 +587,13 @@ def hidden_url_destination(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    # Wymaga HTML: tekst linku wyglada jak URL, a href prowadzi gdzie indziej.
+    # W mailach czysto tekstowych cecha prawie zawsze = 0.
+    anchors = re.findall(r"<a[^>]+href=[\"']?([^\"'\s>]+)[^>]*>(.*?)</a>", _raw(email), re.IGNORECASE | re.DOTALL)
+    value = any(
+        URL_RE.search(shown) and _host(URL_RE.search(shown).group()) != _host(href)
+        for href, shown in anchors
+    )
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -609,9 +602,7 @@ def shortened_url(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = any(h.removeprefix("www.") in SHORTENERS for h in _hosts(email))
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -620,9 +611,12 @@ def url_redirect_chain(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    # Offline nie sledzimy przekierowan - szukamy URL-a zagniezdzonego w parametrze.
+    value = any(
+        re.search(r"(redirect|redir|url|next|goto|continue|return|dest|target|link)=(https?|www|%3a%2f%2f)", u, re.IGNORECASE)
+        or re.search(r".+https?://", u, re.IGNORECASE)
+        for u in _urls(email)
+    )
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -631,9 +625,10 @@ def multiple_subdomains(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = any(
+        h.removeprefix("www.").count(".") >= 3 and not IP_RE.match(h)
+        for h in _hosts(email)
+    )
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -642,9 +637,7 @@ def excessive_hyphens(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = any(h.count("-") >= 2 for h in _hosts(email))
     return int(value)  # format zwrotu: 0 lub 1
 
 
