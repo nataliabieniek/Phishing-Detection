@@ -647,8 +647,11 @@ def suspicious_attachment(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(open|see|review|download|view|check) (the )?attach(ed|ment)",
+        r"attached (file|document)",
+        r"\.(exe|scr|js|vbs|bat|jar|iso|img|zip|rar|docm|xlsm)\b",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -658,8 +661,10 @@ def zip_attachment(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\.zip\b",
+        r"\bzip(ped)? (file|archive|attachment|folder)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -669,8 +674,11 @@ def rar_attachment(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\.(rar|7z)\b",
+        r"\brar (file|archive)",
+        r"compressed (file|archive|folder)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -680,8 +688,10 @@ def exe_attachment(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\.(exe|scr|msi|bat|vbs|jar|apk)\b",
+        r"(run|open|execute|install) the attached (application|program|file|software)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -691,8 +701,11 @@ def macro_enabled_document(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"enable (the )?macros?",
+        r"\.(docm|xlsm|pptm)\b",
+        r"macros? (must|need|should) be enabled",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -702,8 +715,11 @@ def password_protected_archive(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"password[- ]protected",
+        r"(use|enter) the (provided |following |attached )?password to open",
+        r"password (for|to open) the (file|archive|attachment|document)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -713,8 +729,12 @@ def unexpected_invoice(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(attached|enclosed|overdue|outstanding|unpaid) invoice",
+        r"invoice (is )?(attached|enclosed|overdue|due)",
+        r"review the (attached )?invoice",
+        r"invoice ?#? ?\d{3,}",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -724,8 +744,11 @@ def unexpected_receipt(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(payment|purchase|order|transaction) receipt",
+        r"receipt (is )?(attached|enclosed)",
+        r"your receipt",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -735,8 +758,12 @@ def unexpected_contract(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(attached|enclosed) (contract|agreement)",
+        r"(review|sign) the (attached )?(contract|agreement)",
+        r"(contract|agreement) (is )?(attached|enclosed|ready for)",
+        r"docusign|e-?sign(ature)? request",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -746,8 +773,11 @@ def unexpected_document(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(open|review|view|see|download) the (attached|enclosed|shared) (file|document|doc|pdf)",
+        r"(shared|sent) (a|the) (document|file) with you",
+        r"document (has been )?shared",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -757,8 +787,10 @@ def enable_content_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"enable (editing|content)",
+        r"click (on )?\W?enable",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -768,8 +800,10 @@ def disable_protection_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(disable|turn off|deactivate|switch off) (the )?(protected view|antivirus|anti-virus|firewall|windows defender|security|protection)",
+        r"(disable|turn off) your (antivirus|anti-virus|firewall)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -779,8 +813,11 @@ def software_installation_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(download|install|run) (and install )?(the |our |this )?(attached )?(security )?(software|app|application|program|update|plugin|plug-in|codec|tool|extension|patch)",
+        r"(security|critical) (update|patch)",
+        r"installation (is )?required",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -790,8 +827,9 @@ def qr_code_login(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [r"qr[- ]?code", r"scan the code"]) and _match(text, [
+        r"log ?in", r"sign[- ]?in", r"verify", r"authenticat", r"account",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -801,8 +839,9 @@ def qr_code_payment(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [r"qr[- ]?code", r"scan the code"]) and _match(text, [
+        r"pay(ment)?", r"transfer", r"invoice", r"\bblik\b", r"checkout",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
