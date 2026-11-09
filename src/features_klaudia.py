@@ -851,8 +851,9 @@ def generic_greeting(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(dear|hello|hi|greetings),? " + GENERIC_ROLES,
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -862,8 +863,11 @@ def non_personalized_greeting(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(dear|hello|hi|greetings),? (user|account (owner|user)|e-?mail (user|owner)|webmail user|recipient)\b",
+        r"(dear|hello|hi),? [\w.+-]+@[\w-]+\.[\w.]+",
+        r"to whom it may concern",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -872,9 +876,14 @@ def missing_recipient_name(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    # Jest powitanie, ale nie stoi po nim imie (np. "Hello user", "Dear Customer").
+    m = re.search(r"^\W*(dear|hello|hi|greetings)\b[ ,]*([^\n]{0,30})", email.get("body", ""), re.IGNORECASE)
+    if m:
+        rest = m.group(2)
+        named = re.match(r"((mr|mrs|ms|dr)\.? )?[A-Z][a-z]+", rest) and not re.match(GENERIC_ROLES + r"|user", rest.lower())
+        value = not named
+    else:
+        value = 0
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -884,8 +893,16 @@ def grammar_errors(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\b(we|they|you) (is|has|was)\b",
+        r"\b(he|she) (are|have|were)\b",
+        r"\b(has|have|had|been|be) (verify|confirm|update|suspend|block|close|send)\b",
+        r"\b(must|can|will|should|could) to\b",
+        r"\bplease to\b",
+        r"\binformations\b|\badvices\b",
+        r"\bdid not (received|sent|confirmed)\b",
+        r"your account requiring",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -895,8 +912,13 @@ def spelling_errors(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\b(acount|accout|acounts|verfy|verifcation|verificashion|verfication|pasword|passwrod)\b",
+        r"\b(recieve|recieved|adress|secuirty|securty|immediatly|immediatelly|suspened|untill)\b",
+        r"\b(sucessful|sucessfully|recive|payement|bussiness|buisness|oppurtunity|beneficary)\b",
+        r"\b(transfered|accomodate|definately|seperate|occured|wich|thier|teh|alot|goverment)\b",
+        r"\b(privelege|garantee|independant|complet|confirmaton|customor|informaton|benificiary)\b",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -906,8 +928,15 @@ def machine_translation_style(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bkindly\b",
+        r"do the needful|revert back",
+        r"\b(your|the) account need\b",
+        r"needs? checking",
+        r"for your kind (information|attention|consideration)",
+        r"with due respect|\bhumbly\b",
+        r"please (do )?be informed",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -917,8 +946,13 @@ def mixed_languages(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    english = _match(text, [r"\b(the|your|and|please)\b"])
+    foreign = _match(text, [
+        r"[ąćęłńśźż]",
+        r"\b(konto|haslo|hasło|przelew|zaloguj|kliknij|potwierdz|dane|pilne|weryfikacja)\b",
+        r"\b(cuenta|contraseña|compte|mot de passe|passwort|kennwort)\b",
+    ])
+    value = english and foreign
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -927,9 +961,9 @@ def excessive_capitalization(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    words = re.findall(r"[A-Za-z]{3,}", _raw(email))
+    caps = [w for w in words if w.isupper()]
+    value = len(caps) >= 3 and (len(caps) / len(words) >= 0.3 or bool(re.search(r"(\b[A-Z]{3,}\b\W+){3}", _raw(email))))
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -938,9 +972,8 @@ def excessive_exclamation_marks(email: dict) -> int:
 
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
-    text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    raw = _raw(email)
+    value = "!!" in raw or raw.count("!") >= 3
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -950,8 +983,14 @@ def emotional_manipulation(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(save|saving) (a|his|her|my|their) li(fe|ves)",
+        r"please help (me|us)\b",
+        r"\bdesperate(ly)?\b",
+        r"(cancer|terminal(ly)? ill|orphan(s|age)?|\bwidow\b)",
+        r"god bless|last wish|from the bottom of my heart",
+        r"your help (can|will|could)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -961,8 +1000,12 @@ def fear_appeal(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(account|computer|device|data|information|identity|money|funds) (is|are|may be|might be|could be) (at risk|in danger|compromised|infected|hacked|vulnerable)",
+        r"(has|have) been (hacked|compromised|infected|breached)",
+        r"(virus|malware|trojan|ransomware) (has been )?(detected|found)",
+        r"identity theft|legal action|\barrest(ed)?\b|\bpolice\b",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
