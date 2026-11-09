@@ -340,8 +340,10 @@ def personal_data_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(confirm|verify|update|provide|send|submit) (us )?(your )?(personal|private|account) (information|details|data|info)",
+        r"personal (information|details|data)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -351,8 +353,9 @@ def pesel_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bpesel\b",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -362,8 +365,12 @@ def national_id_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(identity|id|identification) (card|document|number)",
+        r"national (id|insurance|identity)",
+        r"social security( number)?|\bssn\b",
+        r"driver'?s licen[cs]e",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -373,8 +380,9 @@ def passport_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bpassport\b",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -384,8 +392,9 @@ def birth_date_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"date of birth|birth ?date|\bdob\b|born on",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -395,8 +404,10 @@ def address_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(home|postal|mailing|billing|residential|street|contact) address",
+        r"(update|confirm|provide|verify|send) (us )?your (full )?address",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -406,8 +417,10 @@ def phone_number_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(phone|mobile|cell|telephone|fax) (number|no\b)",
+        r"(provide|confirm|send|update|verify) (us )?your (private )?(phone|mobile|cell)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -417,8 +430,11 @@ def credit_card_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(credit|debit) card",
+        r"card (number|details|information|info)",
+        r"expir(y|ation) date",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -428,8 +444,10 @@ def cvv_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bcvv2?\b|\bcvc\b|\bcsc\b",
+        r"(card )?security code|card verification",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -439,8 +457,9 @@ def pin_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"\bpin\b",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -450,8 +469,11 @@ def bank_account_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"(bank )?account (number|details|no\b)",
+        r"\biban\b|routing number|sort code|\bswift\b",
+        r"bank(ing)? (details|information|particulars)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -461,8 +483,11 @@ def security_question_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"security question|secret question",
+        r"mother'?s maiden name",
+        r"memorable (word|information)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
@@ -472,8 +497,11 @@ def document_upload_request(email: dict) -> int:
     Zwraca 1 jesli cecha wystepuje w mailu, inaczej 0.
     """
     text = _text(email)
-    # TODO: wykryj ceche (slowa kluczowe / regex) w `text`
-    value = 0
+    value = _match(text, [
+        r"upload (a |the )?(copy|scan|photo|picture|image) of",
+        r"(send|attach|fax) (us )?(a |the )?(copy|scan|photo|picture) of your",
+        r"upload your (id|identity|passport|document)",
+    ])
     return int(value)  # format zwrotu: 0 lub 1
 
 
